@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+import logging as lg
 
 from .views import app
 
@@ -11,9 +12,15 @@ class Login(db.Model):
     username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, emial, username, password):
+    def __init__(self, email, username, password):
         self.email    = email
         self.username = username
         self.password = password
 
 db.create_all()
+
+def init_db():
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
+    lg.warning('Database initialized!')
