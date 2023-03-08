@@ -22,5 +22,6 @@ db.create_all()
 def init_db():
     db.drop_all()
     db.create_all()
+    db.session.add(Login("s39897480@student.rmit.edu.ai","AlexisIMBERT0","AlexisIMBERT0"))
     db.session.commit()
     lg.warning('Database initialized!')
