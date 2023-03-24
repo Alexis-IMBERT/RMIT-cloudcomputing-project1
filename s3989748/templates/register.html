@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'header.html' %}
 
-<head>
-	<title>login</title>
-</head>
-
-<body>
+{% block content %}
 	<section id="login" class="login">
 		<div>
 			<form action="/register" method="post">
@@ -34,6 +29,5 @@
 		</div>
 	</section><!-- End Login Section -->
 
-</body>
 
-</html>
+{% endblock %}

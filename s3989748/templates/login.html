@@ -1,24 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>login</title>
-</head>
+{% extends 'header.html' %}
+{% block content %}
+<section id="login" class="login">
+      <div>
+        <form action="/login" method="post">
+            <div>
+              <input type="text" name="email" id="email" placeholder="Email" required>
+            </div>
 
-<body>
-    <section id="login" class="login">
-        <div>
-          <form action="/login" method="post">
-              <div>
-                <input type="text" name="email" id="email" placeholder="Email" required>
-              </div>
+            <div>
+              <input type="password" name="password" id="password" placeholder="Password" required>
+            </div>
+          <div class="text-center"><button type="submit">Login</button></div>
+        </form>
+      </div>
+  </section>
+{% endblock %}
 
-              <div>
-                <input type="password" name="password" id="password" placeholder="Password" required>
-              </div>
-            <div class="text-center"><button type="submit">Login</button></div>
-          </form>
-          <!--End Contact Form -->
-        </div>
-      </section><!-- End Login Section -->
-</body>
-</html>
