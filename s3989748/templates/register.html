@@ -6,7 +6,7 @@
 			<form action="/register" method="post">
 
 				<div>
-					<input type="text" name="email" id="emial" placeholder="email" required>
+					<input type="text" name="email" id="email" placeholder="email" required>
 				</div>
 
 				<div>
@@ -16,7 +16,9 @@
 				<div>
 					<input type="password" name="password" id="password" placeholder="Password" required>
 				</div>
-
+				{% if(notvalidpassword): %}
+				<p>Password and confirmation are different</p>
+				{%endif%}
 				<div>
 					<input type="password" name="password-confimed" id="password-confimed"
 						placeholder="retype your password" required>
