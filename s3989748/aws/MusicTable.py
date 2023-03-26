@@ -4,6 +4,7 @@ import json
 from __init__ import JSON_FILE_PATH
 from __init__ import BUCKET_MUSIC_NAME
 
+
 def creation_music_table():
     """ creation of the music table """
     # Create a DynamoDB client
@@ -13,7 +14,7 @@ def creation_music_table():
     table_name = DB_MUSIC
     key_schema = [
         {'AttributeName': 'title', 'KeyType': 'HASH'},  # Partition key
-        {'AttributeName': 'artist', 'KeyType': 'RANGE'}, #Sort key
+        {'AttributeName': 'artist', 'KeyType': 'RANGE'},  # Sort key
     ]
     attribute_definitions = [
         {'AttributeName': 'title', 'AttributeType': 'S'},
@@ -47,7 +48,7 @@ def fill_music_table():
 
     # get the Login table
     table_music = dynamodb.Table(DB_MUSIC)
-    
+
     # opening of the json file
     json_file_path = JSON_FILE_PATH
     with open(json_file_path, 'r') as f:
@@ -61,13 +62,13 @@ def fill_music_table():
         web_url = item["web_url"]
         image_url = item["img_url"]
         value = {
-            "title":title,
-            "artist":artist,
-            "year":year,
-            "web_url":web_url,
-            "image_url":image_url
+            "title": title,
+            "artist": artist,
+            "year": year,
+            "web_url": web_url,
+            "image_url": image_url
         }
-        
+
         # adding to the database
         table_music.put_item(Item=value)
         print("ok")
