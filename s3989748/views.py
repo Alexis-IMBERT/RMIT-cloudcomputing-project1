@@ -27,16 +27,32 @@ def login_post():
     # Create the client for the dynamoDB table login
     dynamodb = boto3.resource('dynamodb')
 
+    # get the Login table
+    table_login = dynamodb.Table(DB_LOGIN)
+
     # Get the information from the POST
     email = request.form['email']
     password = request.form['password']
 
-    # Process the information
-    print("-----------------------")
-    print(f"l'email est : {email} et le mot de passe est : {password}")
-    print("-----------------------")
+    # # Process the information
+    # print("-----------------------")
+    # print(f"l'email est : {email} et le mot de passe est : {password}")
+    # print("-----------------------")
 
-    return 'Login successful'
+    # Check the DB
+    response = table_login.get_item(Key={"email": email})
+    try:
+        item = response["Item"]
+    except KeyError:
+        return render_template("login.html",creadential_not_valid=True, is_connected=IS_CONNECTED)
+    
+    # get the real password
+    real_password = item["password"]
+
+    if password != real_password:
+        return render_template("login.html",creadential_not_valid=True, is_connected=IS_CONNECTED)
+
+    return redirect("/home")
 
 
 @app.route('/login', methods=['GET'])

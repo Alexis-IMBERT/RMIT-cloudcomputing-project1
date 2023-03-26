@@ -10,6 +10,9 @@
             <div>
               <input type="password" name="password" id="password" placeholder="Password" required>
             </div>
+            {%if (creadential_not_valid):%}
+            <p>email or password is invalid</p>
+            {%endif%}
           <div class="text-center"><button type="submit">Login</button></div>
         </form>
       </div>
