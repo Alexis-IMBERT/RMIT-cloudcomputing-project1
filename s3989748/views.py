@@ -19,7 +19,7 @@ IS_CONNECTED = False
 @app.route('/index/')
 @app.route('/home')
 def index():
-    return render_template("index.html", is_connected=IS_CONNECTED)
+    return render_template("index.html")
 
 
 @app.route('/login', methods=['POST'])
@@ -44,20 +44,22 @@ def login_post():
     try:
         item = response["Item"]
     except KeyError:
-        return render_template("login.html", creadential_not_valid=True, is_connected=IS_CONNECTED)
+        return render_template("login.html",
+                               creadential_not_valid=True)
 
     # get the real password
     real_password = item["password"]
 
     if password != real_password:
-        return render_template("login.html", creadential_not_valid=True, is_connected=IS_CONNECTED)
+        return render_template("login.html",
+                               creadential_not_valid=True)
 
     return redirect("/home")
 
 
 @app.route('/login', methods=['GET'])
 def login_get():
-    return render_template('login.html', is_connected=IS_CONNECTED)
+    return render_template('login.html')
 
 
 @app.route("/register", methods=["POST"])
@@ -88,12 +90,12 @@ def register_post():
     if "Item" in response:
         return render_template("register.html",
                                email_already_exist=True)
-    
+
     value = {
         "email": email,
         "user_name": user_name,
         "password": password
-        }
+    }
 
     # sending to the DynamoDB
     table_login.put_item(Item=value)
