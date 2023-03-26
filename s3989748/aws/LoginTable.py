@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 import boto3
 
-from __init__ import STUDENT_ID
-from __init__ import END_MAIL
-from __init__ import FIRST_NAME
-from __init__ import LAST_NAME
-from __init__ import DB_LOGIN
+from ..aws import STUDENT_ID
+from ..aws import END_MAIL
+from ..aws import FIRST_NAME
+from ..aws import LAST_NAME
+from ..aws import DB_LOGIN
 
 
 def create_login_table():

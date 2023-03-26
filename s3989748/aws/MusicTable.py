@@ -1,8 +1,8 @@
 import boto3
 import json
 
-from __init__ import JSON_FILE_PATH
-from __init__ import BUCKET_MUSIC_NAME
+from ..aws import JSON_FILE_PATH
+from ..aws import BUCKET_MUSIC_NAME
 
 
 def creation_music_table():
