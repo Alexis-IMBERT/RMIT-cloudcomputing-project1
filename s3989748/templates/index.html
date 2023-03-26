@@ -1,0 +1,25 @@
+{% extends "header.html" %}
+{% block content %}
+
+    <div>
+        <form action="/login/createtable" method="get">
+            <div class="text-center"><button type="submit">Create Login Table</button></div>
+        </form>
+        <form action="/login/filltable" method="get">
+            <div class="text-center"><button type="submit">fill Login Table</button></div>
+        </form>
+        <form action="/music/createtable" method="get">
+            <div class="text-center"><button type="submit">Create Music Table</button></div>
+        </form>
+        <form action="/login/filltable" method="get">
+            <div class="text-center"><button type="submit">Fill Music Table</button></div>
+        </form>
+        <form action="/login/createbucket" method="get">
+            <div class="text-center"><button type="submit">Create music bucket</button></div>
+        </form>
+        <form action="/login/fillbucket" method="get">
+            <div class="text-center"><button type="submit">Fill Music Bucket</button></div>
+        </form>
+    </div>
+
+{% endblock %}
