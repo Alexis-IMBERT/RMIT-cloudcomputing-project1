@@ -5,6 +5,7 @@ from __init__ import STUDENT_ID
 from __init__ import END_MAIL
 from __init__ import FIRST_NAME
 from __init__ import LAST_NAME
+from __init__ import DB_LOGIN
 
 
 def create_login_table():
@@ -14,7 +15,7 @@ def create_login_table():
     dynamodb = boto3.client('dynamodb')
 
     # Define the table name and its attributes
-    table_name = 'login'
+    table_name = DB_LOGIN
     key_schema = [
         {'AttributeName': 'email', 'KeyType': 'HASH'},  # Partition key
         # {'AttributeName': 'user_name', 'KeyType': 'RANGE'}, #Sort key
@@ -61,7 +62,7 @@ def fill_login_table():
     dynamodb = boto3.resource('dynamodb')
 
     # get the Login table
-    table_login = dynamodb.Table('login')
+    table_login = dynamodb.Table(DB_LOGIN)
 
     list_password = generate_password()
     for i in range(10):

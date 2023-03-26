@@ -1,13 +1,16 @@
 import boto3
 import json
 
+from __init__ import JSON_FILE_PATH
+from __init__ import BUCKET_MUSIC_NAME
+
 def creation_music_table():
     """ creation of the music table """
     # Create a DynamoDB client
     dynamodb = boto3.client('dynamodb')
 
     # Define the table name and its attributes
-    table_name = 'music'
+    table_name = DB_MUSIC
     key_schema = [
         {'AttributeName': 'title', 'KeyType': 'HASH'},  # Partition key
         {'AttributeName': 'artist', 'KeyType': 'RANGE'}, #Sort key
@@ -43,10 +46,10 @@ def fill_music_table():
     dynamodb = boto3.resource('dynamodb')
 
     # get the Login table
-    table_music = dynamodb.Table('music')
+    table_music = dynamodb.Table(DB_MUSIC)
     
     # opening of the json file
-    json_file_path = "/home/alexis/Documents/Nuage-INSA/Cours/S8/CloudComputing/project/cloudcomputing-project1/a1.json"
+    json_file_path = JSON_FILE_PATH
     with open(json_file_path, 'r') as f:
         data = json.load(f)
 
@@ -70,6 +73,6 @@ def fill_music_table():
         print("ok")
 
 
-if __name__=="__main__":
+# if __name__=="__main__":
     # creation_music_table()
-    fill_music_table()
+    # fill_music_table()

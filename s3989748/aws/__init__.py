@@ -10,3 +10,9 @@ STUDENT_ID = "s3989748"
 END_MAIL = "@student.rmit.edu.au"
 FIRST_NAME = "Alexis"
 LAST_NAME = "IMBERT"
+
+JSON_FILE_PATH = "./a1.json"
+
+DB_MUSIC = "music"
+DB_LOGIN = "login"
+BUCKET_MUSIC_NAME = "s3989748-music-s3"
