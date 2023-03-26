@@ -23,7 +23,9 @@
 					<input type="password" name="password-confimed" id="password-confimed"
 						placeholder="retype your password" required>
 				</div>
-
+				{% if(email_already_exist): %}
+				<p>The email already exists</p>
+				{%endif%}
 				<div class="text-center"><button type="submit">Register</button></div>
 			</form>
 			<!--End Contact Form -->

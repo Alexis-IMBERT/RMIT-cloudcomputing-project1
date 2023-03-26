@@ -44,13 +44,13 @@ def login_post():
     try:
         item = response["Item"]
     except KeyError:
-        return render_template("login.html",creadential_not_valid=True, is_connected=IS_CONNECTED)
-    
+        return render_template("login.html", creadential_not_valid=True, is_connected=IS_CONNECTED)
+
     # get the real password
     real_password = item["password"]
 
     if password != real_password:
-        return render_template("login.html",creadential_not_valid=True, is_connected=IS_CONNECTED)
+        return render_template("login.html", creadential_not_valid=True, is_connected=IS_CONNECTED)
 
     return redirect("/home")
 
@@ -68,19 +68,42 @@ def register_post():
     password_confrimation = request.form["password-confimed"]
     user_name = request.form["username"]
 
-    print("-----------------------")
-    print(f"\nl'email est : {email}, l'user name est : {user_name}, le mot de passe est : {password} et la confirmation est : {password_confrimation}\n")
-    print("-----------------------")
+    # Create the client for the dynamoDB table login
+    dynamodb = boto3.resource('dynamodb')
+
+    # get the Login table
+    table_login = dynamodb.Table(DB_LOGIN)
+
+    # print("-----------------------")
+    # print(f"\nl'email est : {email}, l'user name est : {user_name}, le mot de passe est : {password} et la confirmation est : {password_confrimation}\n")
+    # print("-----------------------")
 
     if password != password_confrimation:
-        return render_template('register.html', is_connected=IS_CONNECTED, notvalidpassword=True)
+        return render_template('register.html',
+                               notvalidpassword=True)
 
-    return render_template('register.html', is_connected=IS_CONNECTED, notvalidpassword=False)
+    # Check the DB
+    response = table_login.get_item(Key={"email": email})
+
+    if "Item" in response:
+        return render_template("register.html",
+                               email_already_exist=True)
+    
+    value = {
+        "email": email,
+        "user_name": user_name,
+        "password": password
+        }
+
+    # sending to the DynamoDB
+    table_login.put_item(Item=value)
+
+    return redirect('/home')
 
 
 @app.route('/register', methods=['GET'])
 def register_get():
-    return render_template('register.html', is_connected=IS_CONNECTED)
+    return render_template('register.html')
 
 
 @app.route("/login/createtable")
