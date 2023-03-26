@@ -16,7 +16,7 @@ def create_login_table():
     # Define the table name and its attributes
     table_name = 'login'
     key_schema = [
-        {'AttributeName': 'email', 'KeyType': 'HASH'},        #Partition key
+        {'AttributeName': 'email', 'KeyType': 'HASH'},  # Partition key
         # {'AttributeName': 'user_name', 'KeyType': 'RANGE'}, #Sort key
         # {'AttributeName': 'password', 'KeyType': 'RANGE'},  #Sort key
     ]
@@ -60,7 +60,7 @@ def fill_login_table():
     # Get the service resource.
     dynamodb = boto3.resource('dynamodb')
 
-    # get the Login table 
+    # get the Login table
     table_login = dynamodb.Table('login')
 
     list_password = generate_password()
@@ -76,7 +76,8 @@ def fill_login_table():
         print(value)
         table_login.put_item(Item=value)
 
-if(__name__=="__main__"):
+
+if (__name__ == "__main__"):
     # create_login_table()
     fill_login_table()
     print("Return 0")
