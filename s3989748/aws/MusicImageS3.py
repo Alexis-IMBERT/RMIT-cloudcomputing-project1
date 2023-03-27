@@ -10,19 +10,22 @@ from botocore.exceptions import ClientError
 
 from ..aws import JSON_FILE_PATH
 from ..aws import BUCKET_MUSIC_NAME
+from ..aws import REGION
 
 
-def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region="us-west-2"):
+def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region=REGION):
     """
     function that create of the bucket
     :param bucket_name: String name of the bucket
     :param region: String region to create the bucket
     :return: True if the bucket is created, else False 
     """
+    # Get the client s3
+    s3_client = boto3.client('s3')
+
     # Create bucket
     try:
         if region is None:
-            s3_client = boto3.client('s3')
             s3_client.create_bucket(Bucket=bucket_name)
         else:
             s3_client = boto3.client('s3', region_name=region)
