@@ -1,5 +1,5 @@
 import boto3
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, make_response
 
 from .aws import DB_LOGIN
 from .aws.LoginTable import create_login_table
@@ -18,15 +18,43 @@ app = Flask(__name__)
 IS_CONNECTED = False
 
 
+def is_connected(request):
+    """
+    test if you are connected or not 
+    :param request: the request receive
+    :return: True if you are connected
+    """
+    # Check the cookies
+    email = request.cookies.get("email")
+    user_name = request.cookies.get("user_name")
+    # Test if you are already connected
+    if (email != None) & (user_name != None):
+        return True
+    return False
+
+
 @app.route('/')
 @app.route('/index/')
 @app.route('/home')
 def index():
-    return render_template("index.html")
+    if is_connected(request):
+        user_name = request.cookies.get("user_name")
+        return render_template("index.html",is_connected=True,user_name=user_name)
+    return render_template("index.html",is_connected=is_connected(request=request))
 
-
+@app.route("/logout")
+def logout():
+    response = make_response(redirect("/login"))
+    response.delete_cookie('email')
+    response.delete_cookie('user_name')
+    return response
+    
 @app.route('/login', methods=['POST'])
 def login_post():
+    # Check of connection
+    if (is_connected(request)):
+        return redirect("/home")
+
     # Create the client for the dynamoDB table login
     dynamodb = boto3.resource('dynamodb')
 
@@ -52,21 +80,34 @@ def login_post():
 
     # get the real password
     real_password = item["password"]
+    user_name = item["user_name"]
 
     if password != real_password:
         return render_template("login.html",
                                creadential_not_valid=True)
 
-    return redirect("/home")
+    # Cookie assurant la connexion
+    response = make_response(redirect("/home"))
+    response.set_cookie('email', email)
+    response.set_cookie('user_name', user_name)
+
+    return response
 
 
 @app.route('/login', methods=['GET'])
 def login_get():
+    if (is_connected(request)):
+        return redirect("/home")
+
     return render_template('login.html')
 
 
 @app.route("/register", methods=["POST"])
 def register_post():
+    # Check of connection
+    if (is_connected(request)):
+        return redirect("/home")
+
     # Get the information from the POST methods
     email = request.form["email"]
     password = request.form['password']
@@ -103,11 +144,15 @@ def register_post():
     # sending to the DynamoDB
     table_login.put_item(Item=value)
 
-    return redirect('/home')
+    return redirect('/login')
 
 
 @app.route('/register', methods=['GET'])
 def register_get():
+    # Check of connection
+    if (is_connected(request)):
+        return redirect("/home")
+
     return render_template('register.html')
 
 
@@ -146,20 +191,24 @@ def music_fill_bucket():
     fill_bucket()
     return "The bucket has been filled"
 
+
 @app.route("/clean/table/login")
 def cleaning_login_table():
     cleaning_db_login()
     return "Login DB has been deleted"
+
 
 @app.route("/clean/table/music")
 def cleaning_music_table():
     cleaning_db_music()
     return "Music DB has been deleted"
 
+
 @app.route("/clean/bucket")
 def cleaning_bucket():
     cleaning_bucket_music()
     return "Bucket has been deleted"
+
 
 @app.route("/clean/all")
 def cleaning_all():
