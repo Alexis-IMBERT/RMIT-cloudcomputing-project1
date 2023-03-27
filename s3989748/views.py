@@ -8,6 +8,9 @@ from .aws.MusicTable import creation_music_table
 from .aws.MusicTable import fill_music_table
 from .aws.MusicImageS3 import creation_bucket
 from .aws.MusicImageS3 import fill_bucket
+from .aws.cleaning import cleaning_db_login
+from .aws.cleaning import cleaning_db_music
+from .aws.cleaning import cleaning_bucket_music
 
 app = Flask(__name__)
 
@@ -134,14 +137,36 @@ def music_fill_table():
 
 @app.route("/music/createbucket")
 def music_create_bucket():
-    creation_bucket()
-    return "The bucket has been created"
+    result = creation_bucket()
+    return f"The bucket has been created : {result} "
 
 
 @app.route("/music/fillbucket")
 def music_fill_bucket():
     fill_bucket()
     return "The bucket has been filled"
+
+@app.route("/clean/table/login")
+def cleaning_login_table():
+    cleaning_db_login()
+    return "Login DB has been deleted"
+
+@app.route("/clean/table/music")
+def cleaning_music_table():
+    cleaning_db_music()
+    return "Music DB has been deleted"
+
+@app.route("/clean/bucket")
+def cleaning_bucket():
+    cleaning_bucket_music()
+    return "Bucket has been deleted"
+
+@app.route("/clean/all")
+def cleaning_all():
+    cleaning_db_login()
+    cleaning_db_music()
+    cleaning_bucket_music()
+    return "DB login and music has been deleted <br/> Bucket has been deleted"
 
 
 app.config.from_object('config')

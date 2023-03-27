@@ -13,7 +13,7 @@ from ..aws import BUCKET_MUSIC_NAME
 from ..aws import REGION
 
 
-def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region=REGION):
+def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region=None):
     """
     function that create of the bucket
     :param bucket_name: String name of the bucket
@@ -33,6 +33,7 @@ def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region=REGION):
             s3_client.create_bucket(Bucket=bucket_name,
                                     CreateBucketConfiguration=location)
     except ClientError as e:
+        raise(e)
         logging.error(e)
         return False
     return True

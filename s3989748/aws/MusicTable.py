@@ -3,7 +3,7 @@ import json
 
 from ..aws import JSON_FILE_PATH
 from ..aws import BUCKET_MUSIC_NAME
-
+from ..aws import DB_MUSIC
 
 def creation_music_table():
     """ creation of the music table """
