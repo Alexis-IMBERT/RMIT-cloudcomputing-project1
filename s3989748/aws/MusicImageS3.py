@@ -1,16 +1,14 @@
 """
 Function to create and fill the S3 bucket with the images of the a1.json
 """
-import boto3
 import json
-import os
-import httpx
 import logging
+import boto3
+import httpx
 from botocore.exceptions import ClientError
 
 from ..aws import JSON_FILE_PATH
 from ..aws import BUCKET_MUSIC_NAME
-from ..aws import REGION
 
 
 def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region=None):
@@ -32,9 +30,9 @@ def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region=None):
             location = {'LocationConstraint': region}
             s3_client.create_bucket(Bucket=bucket_name,
                                     CreateBucketConfiguration=location)
-    except ClientError as e:
-        raise(e)
-        logging.error(e)
+    except ClientError as client_error:
+        raise (client_error)
+        logging.error(client_error)
         return False
     return True
 
@@ -70,6 +68,25 @@ def fill_bucket(bucket_name=BUCKET_MUSIC_NAME):
         s3_client.Bucket(bucket_name).put_object(Body=content, Key=key)
 
         print(f"The images \t{key}\t was sent on S3.")
+
+
+def get_s3_object(key: str, bucket_name: str = BUCKET_MUSIC_NAME):
+    """ 
+    :param key: the key of the object
+    :param bucket_name: the name of the bucket
+    :return: the file that correspond to the key or None if an error happen
+    """
+    # Get the ressource
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(bucket_name)
+
+    # Try to get the object
+    try:
+        obj = bucket.Object(key).get()
+        return obj['Body'].read()
+    except Exception as exception:
+        print(f"Error getting object {key} from bucket {bucket_name}: {exception}")
+        return None
 
 
 if __name__ == "__main__":

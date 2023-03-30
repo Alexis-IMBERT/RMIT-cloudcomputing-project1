@@ -243,7 +243,13 @@ def query_music():
     print("\n -----------------------")
     return str(result)
 
+###### TEST #######
+from .aws.MusicImageS3 import get_s3_object
 
+@app.route("/test")
+def test():
+    # s3_image = get_s3_object()
+    return render_template("index.html", image="test")
 ################# ACTION ON TABLE AND BUCKET #################
 
 @app.route("/login/createtable")
