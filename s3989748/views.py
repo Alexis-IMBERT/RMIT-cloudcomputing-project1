@@ -1,5 +1,5 @@
 import boto3
-from flask import Flask, render_template, redirect, request, make_response
+from flask import Flask, render_template, redirect, request, make_response, session
 
 from .aws import DB_LOGIN
 from .aws.LoginTable import create_login_table
@@ -11,11 +11,8 @@ from .aws.MusicImageS3 import fill_bucket
 from .aws.cleaning import cleaning_db_login
 from .aws.cleaning import cleaning_db_music
 from .aws.cleaning import cleaning_bucket_music
-
+from .aws import DB_MUSIC
 app = Flask(__name__)
-
-
-IS_CONNECTED = False
 
 
 def is_connected(request):
@@ -24,11 +21,10 @@ def is_connected(request):
     :param request: the request receive
     :return: True if you are connected
     """
-    # Check the cookies
-    email = request.cookies.get("email")
-    user_name = request.cookies.get("user_name")
+    # Check the session
+    loggedin = session.get("loggedin")
     # Test if you are already connected
-    if (email != None) & (user_name != None):
+    if (loggedin):
         return True
     return False
 
@@ -38,17 +34,22 @@ def is_connected(request):
 @app.route('/home')
 def index():
     if is_connected(request):
-        user_name = request.cookies.get("user_name")
-        return render_template("index.html",is_connected=True,user_name=user_name)
-    return render_template("index.html",is_connected=is_connected(request=request))
+        user_name = session.get("user_name")
+        return render_template("index.html", is_connected=True, user_name=user_name)
+    return render_template("index.html", is_connected=is_connected(request=request))
+
 
 @app.route("/logout")
 def logout():
-    response = make_response(redirect("/login"))
-    response.delete_cookie('email')
-    response.delete_cookie('user_name')
-    return response
-    
+    if (is_connected(request)):
+        session.pop("loggedin", None)
+        session.pop("email", None)
+        session.pop("user_name", None)
+    return redirect("/login")
+
+################# LOGIN #################
+
+
 @app.route('/login', methods=['POST'])
 def login_post():
     # Check of connection
@@ -86,12 +87,12 @@ def login_post():
         return render_template("login.html",
                                creadential_not_valid=True)
 
-    # Cookie assurant la connexion
-    response = make_response(redirect("/home"))
-    response.set_cookie('email', email)
-    response.set_cookie('user_name', user_name)
+    # Session management
+    session["email"] = email
+    session["user_name"] = user_name
+    session["loggedin"] = True
 
-    return response
+    return redirect("/home")
 
 
 @app.route('/login', methods=['GET'])
@@ -100,6 +101,8 @@ def login_get():
         return redirect("/home")
 
     return render_template('login.html')
+
+################# REGISTER #################
 
 
 @app.route("/register", methods=["POST"])
@@ -155,6 +158,93 @@ def register_get():
 
     return render_template('register.html')
 
+
+################# QUERY #################
+@app.route('/query-music', methods=['POST'])
+def query_music():
+    # Check of connection
+    print("check if connected")
+    if (not (is_connected(request))):
+        print("not connected")
+        return redirect("/home")
+    print("connected")
+
+    # post variable :
+    print("get the variable in the post")
+    title = request.form["title"]
+    year = request.form["year"]
+    artist = request.form["artist"]
+    print(
+        f"the variable are :\n\t - title : {title},\n\t - artist : {artist},\n\t - year : {year}")
+
+    # Creation of the client
+    dynamodb = boto3.client('dynamodb')
+
+    # Define the table name
+    table_name = DB_MUSIC
+
+    scan_params = {
+        'TableName': table_name,
+        'FilterExpression': '',
+        'ExpressionAttributeNames': {},
+        'ExpressionAttributeValues': {}
+    }
+
+    # Create the scan parameters in function of the result
+    if title != "":
+        # titre present
+        scan_params["FilterExpression"] += '#title = :title'
+        scan_params["ExpressionAttributeNames"]['#title'] = 'title'
+        scan_params["ExpressionAttributeValues"][":title"] = {'S': title}
+
+    if artist != "":
+        #  artist present
+        # test if there is already something in the string
+        if scan_params["FilterExpression"] != '':
+            scan_params["FilterExpression"] += ' and '
+
+        scan_params["FilterExpression"] += '#artist = :artist'
+        scan_params["ExpressionAttributeNames"]['#artist'] = 'artist'
+        scan_params["ExpressionAttributeValues"][":artist"] = {'S': artist}
+
+    if year != "":
+        # artist present
+        # test if there is already something in the string
+        if scan_params["FilterExpression"] != '':
+            scan_params["FilterExpression"] += ' and '
+
+        scan_params["FilterExpression"] += '#year = :year'
+        scan_params["ExpressionAttributeNames"]['#year'] = 'year'
+        scan_params["ExpressionAttributeValues"][":year"] = {'S': year}
+
+    # Perform the scan
+    response = dynamodb.scan(**scan_params)
+
+    # Print the results
+    print("\n -----------------------")
+    print("result of the query")
+    items = response['Items']
+    result = []
+    for item in items:
+        # Extraction of variable :
+        result_title    = item["title"]['S']
+        result_year     = item["year"]['S']
+        result_artist   = item["artist"]['S']
+        result_web_url  = item["web_url"]['S']
+        result_image_url= item["image_url"]['S']
+        result.append({
+            "title":result_title,
+            "year":result_year,
+            "artist":result_artist,
+            "image_url":result_image_url,
+            "web_url":result_web_url
+        })
+        print(f'Titre : {result_title},\t\t\t\t Year : {result_year}, \t\t\t\t Artist : {result_artist}')
+    print("\n -----------------------")
+    return str(result)
+
+
+################# ACTION ON TABLE AND BUCKET #################
 
 @app.route("/login/createtable")
 def login_create_table():
@@ -216,6 +306,17 @@ def cleaning_all():
     cleaning_db_music()
     cleaning_bucket_music()
     return "DB login and music has been deleted <br/> Bucket has been deleted"
+
+
+@app.route("/create/all")
+def create_all():
+    create_login_table()
+    fill_login_table()
+    creation_music_table()
+    fill_music_table()
+    creation_bucket()
+    fill_bucket()
+    return "everything has been created and fill !"
 
 
 app.config.from_object('config')

@@ -1,39 +1,69 @@
 {% extends "header.html" %}
+
 {% block content %}
 
-    <div>
-        <form action="/login/createtable" method="get">
-            <div class="text-center"><button type="submit">Create Login Table</button></div>
-        </form>
-        <form action="/login/filltable" method="get">
-            <div class="text-center"><button type="submit">fill Login Table</button></div>
-        </form>
-        <form action="/music/createtable" method="get">
-            <div class="text-center"><button type="submit">Create Music Table</button></div>
-        </form>
-        <form action="/music/filltable" method="get">
-            <div class="text-center"><button type="submit">Fill Music Table</button></div>
-        </form>
-        <form action="/music/createbucket" method="get">
-            <div class="text-center"><button type="submit">Create music bucket</button></div>
-        </form>
-        <form action="/music/fillbucket" method="get">
-            <div class="text-center"><button type="submit">Fill Music Bucket</button></div>
-        </form>
+<h1>Main Area</h1>
+<h2>Subscription Area</h2>
 
-        <form action="/clean/table/login" method="get">
-            <div class="text-center"><button type="submit">Delete Login Table</button></div>
-        </form>
-        <form action="/clean/table/music" method="get">
-            <div class="text-center"><button type="submit">Delete Music Table</button></div>
-        </form>
-        <form action="/clean/bucket" method="get">
-            <div class="text-center"><button type="submit">Delete Bucket</button></div>
-        </form>
-        <form action="/clean/all" method="get">
-            <div class="text-center"><button type="submit">Clean all</button></div>
-        </form>
-
-    </div>
+<h2>Query Area</h2>
+<div>
+    <form action="/query-music" method="post">
+        <div>
+            <input type="text" name="title" id="title" placeholder="Title">
+        </div>
+        <div>
+            <input type="text" name="year" id="year" placeholder="Year">
+        </div>
+        <div>
+            <input type="text" name="artist" id="artist" placeholder="Artist">
+        </div>
+        {%if (query_not_exist): %}
+        <p>No result is retrieved. Please query again</p>
+        {%endif%}
+        <div class="text-center"><button type="submit">Querry</button></div>
+    </form>
+</div>
 
 {% endblock %}
+
+{%block footer%}
+<div>
+    <h2>Inidividual Actions</h2>
+    <form action="/login/createtable" method="get">
+        <div class="text-center"><button type="submit">Create Login Table</button></div>
+    </form>
+    <form action="/login/filltable" method="get">
+        <div class="text-center"><button type="submit">fill Login Table</button></div>
+    </form>
+    <form action="/music/createtable" method="get">
+        <div class="text-center"><button type="submit">Create Music Table</button></div>
+    </form>
+    <form action="/music/filltable" method="get">
+        <div class="text-center"><button type="submit">Fill Music Table</button></div>
+    </form>
+    <form action="/music/createbucket" method="get">
+        <div class="text-center"><button type="submit">Create music bucket</button></div>
+    </form>
+    <form action="/music/fillbucket" method="get">
+        <div class="text-center"><button type="submit">Fill Music Bucket</button></div>
+    </form>
+
+    <form action="/clean/table/login" method="get">
+        <div class="text-center"><button type="submit">Delete Login Table</button></div>
+    </form>
+    <form action="/clean/table/music" method="get">
+        <div class="text-center"><button type="submit">Delete Music Table</button></div>
+    </form>
+    <form action="/clean/bucket" method="get">
+        <div class="text-center"><button type="submit">Delete Bucket</button></div>
+    </form>
+    <h2>All creation and delete</h2>
+    <form action="/create/all" method="get">
+        <div class="text-center"><button type="submit">Create all</button></div>
+    </form>
+    <form action="/clean/all" method="get">
+        <div class="text-center"><button type="submit">Clean all</button></div>
+    </form>
+
+</div>
+{%endblock%}

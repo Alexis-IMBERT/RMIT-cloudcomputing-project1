@@ -1,4 +1,5 @@
 import boto3
+from botocore.exceptions import ClientError
 
 from ..aws import DB_LOGIN
 from ..aws import DB_MUSIC
@@ -8,10 +9,16 @@ def cleaning_database(table_name):
     """ delete the data base with the given name """
     # Get the service resource.
     dynamodb = boto3.resource('dynamodb')
-    # Selection of the Table
-    table = dynamodb.Table(table_name)
-    # Deleting the table
-    table.delete()
+    # If the table does not exist we pass
+    try:
+        # Selection of the Table
+        table = dynamodb.Table(table_name)
+        # Deleting the table
+        table.delete()
+    except ClientError:
+        print(f"database {table_name} already deleted")
+        pass
+    
     
 
 def cleaning_db_login():
@@ -28,16 +35,20 @@ def delete_all_object(bucket_name):
     """ delete all teh object of the bucket bucket_name """
     # Get the service resource.
     s3 = boto3.client('s3')
-    # get the list of the object in the bucket 
-    response = s3.list_objects_v2(Bucket=bucket_name)
-    # If there is anything in the bucket there will be the exception KeyError but it's okay, it is the goal of the operation
+    # If the bucket does not exist we pass
     try:
-        for obj in response['Contents']:
-            s3.delete_object(
-                Bucket=BUCKET_MUSIC_NAME,
-                Key=obj['Key']
-            )
-    except KeyError:
+        # get the list of the object in the bucket 
+        response = s3.list_objects_v2(Bucket=bucket_name)
+        # If there is anything in the bucket there will be the exception KeyError but it's okay, it is the goal of the operation
+        try:
+            for obj in response['Contents']:
+                s3.delete_object(
+                    Bucket=BUCKET_MUSIC_NAME,
+                    Key=obj['Key']
+                )
+        except KeyError:
+            pass
+    except ClientError:
         pass
 
 
@@ -46,5 +57,9 @@ def cleaning_bucket_music():
     s3 = boto3.client('s3')
     delete_all_object(BUCKET_MUSIC_NAME)
     print("bucket is now empty")
-    s3.delete_bucket(Bucket=BUCKET_MUSIC_NAME)
-    print("bucket has been deleted")
+    try:
+        s3.delete_bucket(Bucket=BUCKET_MUSIC_NAME)
+        print("bucket has been deleted")
+    except ClientError:
+        print("Bucket already deleted")
+        pass
