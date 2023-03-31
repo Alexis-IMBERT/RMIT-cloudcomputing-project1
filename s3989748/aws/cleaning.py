@@ -5,6 +5,7 @@ from ..aws import DB_LOGIN
 from ..aws import DB_MUSIC
 from ..aws import BUCKET_MUSIC_NAME
 
+
 def cleaning_database(table_name):
     """ delete the data base with the given name """
     # Get the service resource.
@@ -17,19 +18,19 @@ def cleaning_database(table_name):
         table.delete()
     except ClientError:
         print(f"database {table_name} already deleted")
-        pass
-    
-    
+
 
 def cleaning_db_login():
     """ delete the db login """
     cleaning_database(DB_LOGIN)
     print("DB login has been deleted")
 
+
 def cleaning_db_music():
     """ delete the db music """
     cleaning_database(DB_MUSIC)
     print("DB music has been deleted")
+
 
 def delete_all_object(bucket_name):
     """ delete all teh object of the bucket bucket_name """
@@ -37,7 +38,7 @@ def delete_all_object(bucket_name):
     s3 = boto3.client('s3')
     # If the bucket does not exist we pass
     try:
-        # get the list of the object in the bucket 
+        # get the list of the object in the bucket
         response = s3.list_objects_v2(Bucket=bucket_name)
         # If there is anything in the bucket there will be the exception KeyError but it's okay, it is the goal of the operation
         try:
@@ -62,4 +63,3 @@ def cleaning_bucket_music():
         print("bucket has been deleted")
     except ClientError:
         print("Bucket already deleted")
-        pass

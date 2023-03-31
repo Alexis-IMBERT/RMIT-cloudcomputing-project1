@@ -31,9 +31,7 @@ def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region=None):
             s3_client.create_bucket(Bucket=bucket_name,
                                     CreateBucketConfiguration=location)
     except ClientError as client_error:
-        raise (client_error)
-        logging.error(client_error)
-        return False
+        raise client_error
     return True
 
 
@@ -48,8 +46,8 @@ def fill_bucket(bucket_name=BUCKET_MUSIC_NAME):
 
     # opening of the json file
     json_file_path = JSON_FILE_PATH
-    with open(json_file_path, 'r') as f:
-        data = json.load(f)
+    with open(json_file_path, 'r', encoding='utf-8') as file:
+        data = json.load(file)
 
     for item in data['songs']:
         # setting the usefull values
@@ -85,10 +83,6 @@ def get_s3_object(key: str, bucket_name: str = BUCKET_MUSIC_NAME):
         obj = bucket.Object(key).get()
         return obj['Body'].read()
     except Exception as exception:
-        print(f"Error getting object {key} from bucket {bucket_name}: {exception}")
+        print(
+            f"Error getting object {key} from bucket {bucket_name}: {exception}")
         return None
-
-
-if __name__ == "__main__":
-    # print(f"The bucket was created : {creation_bucket()}")
-    fill_bucket()

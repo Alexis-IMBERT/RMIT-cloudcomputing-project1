@@ -2,8 +2,8 @@ import boto3
 import json
 
 from ..aws import JSON_FILE_PATH
-from ..aws import BUCKET_MUSIC_NAME
 from ..aws import DB_MUSIC
+
 
 def creation_music_table():
     """ creation of the music table """
@@ -71,9 +71,4 @@ def fill_music_table():
 
         # adding to the database
         table_music.put_item(Item=value)
-        print("ok")
-
-
-# if __name__=="__main__":
-    # creation_music_table()
-    # fill_music_table()
+        print(f"Title {title} from {artist} year : {year} is on DB")
