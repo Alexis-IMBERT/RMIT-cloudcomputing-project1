@@ -4,6 +4,17 @@
 
 <h1>Main Area</h1>
 <h2>Subscription Area</h2>
+<ul>
+    {% for item in liste_subscription:%}
+    <li>
+        <p> {{item["title"]}} </p>
+        <p> {{item["artist"]}} </p>
+        <p> {{item["year"]}} </p>
+        <p> {{item["image_url"]}} </p>
+        <button type="button" onclick="window.location.href = `{{url_for('subscribe', title=item['title'], artist=item['artist'], year=item['year'] )}}`;">Remove</button>
+    </li>
+    {% endfor %}
+</ul>
 
 <h2>Query Area</h2>
 <div>
@@ -23,6 +34,22 @@
         <div class="text-center"><button type="submit">Querry</button></div>
     </form>
 </div>
+
+
+<ul>
+    {% for item in liste_query:%}
+    <li>
+        <p> {{item["title"]}} </p>
+        <p> {{item["artist"]}} </p>
+        <p> {{item["year"]}} </p>
+	    <img src="{{ url_for('static', filename=item['image']) }}" alt="artist image">
+
+        <button type="button" onclick="window.location.href = `{{url_for('subscribe', title=item['title'], artist=item['artist'], year=item['year'] )}}`;">Subscribe</button>
+        <!-- </form> -->
+    </li>
+    {% endfor %}
+</ul>
+
 
 {% endblock %}
 

@@ -1,5 +1,12 @@
+import base64
+from io import BytesIO
 import boto3
-from flask import Flask, render_template, redirect, request, session
+from flask import Flask, render_template
+from PIL import Image
+import matplotlib.pyplot as plt
+import base64
+
+from flask import Flask, render_template, redirect, request, session, url_for
 # from .aws.MusicImageS3 import get_s3_object
 
 from .aws import DB_LOGIN
@@ -9,6 +16,7 @@ from .aws.MusicTable import creation_music_table
 from .aws.MusicTable import fill_music_table
 from .aws.MusicImageS3 import creation_bucket
 from .aws.MusicImageS3 import fill_bucket
+from .aws.MusicImageS3 import get_s3_object
 from .aws.cleaning import cleaning_db_login
 from .aws.cleaning import cleaning_db_music
 from .aws.cleaning import cleaning_bucket_music
@@ -33,9 +41,13 @@ def is_connected():
     print(f"connected ? {loggedin}")
 
     # Test if you are already connected
-    if (loggedin):
-        return True
-    return False
+    return bool(loggedin)
+
+
+# Register custom Jinja2 filter
+@app.template_filter('b64encode')
+def b64encode_filter(s):
+    return base64.b64encode(s.encode('utf-8')).decode('utf-8')
 
 
 @app.route('/')
@@ -43,6 +55,7 @@ def is_connected():
 @app.route('/home')
 def index():
     """ Route index """
+    print("In the route index/home/ /")
     if is_connected():
         user_name = session.get("user_name")
         return render_template("index.html", is_connected=True, user_name=user_name)
@@ -52,10 +65,12 @@ def index():
 @app.route("/logout")
 def logout():
     """ route logout """
+    print("in route logout")
     if (is_connected()):
         session.pop("loggedin", None)
         session.pop("email", None)
         session.pop("user_name", None)
+    print("I will leave logout route and redirect to login")
     return redirect("/login")
 
 ################# LOGIN #################
@@ -64,15 +79,16 @@ def logout():
 @app.route('/login', methods=['POST'])
 def login_post():
     """ Route login for the method post """
+    print("In route Login with method post")
     # Check of connection
     if is_connected():
         return redirect("/home")
 
     # Create the client for the dynamoDB table login
     dynamodb = boto3.resource('dynamodb', region_name=REGION,
-                            aws_access_key_id=KEY_ID,
-                            aws_secret_access_key=ACCESS_KEY,
-                            aws_session_token=TOKEN)
+                              aws_access_key_id=KEY_ID,
+                              aws_secret_access_key=ACCESS_KEY,
+                              aws_session_token=TOKEN)
 
     # get the Login table
     table_login = dynamodb.Table(DB_LOGIN)
@@ -81,13 +97,14 @@ def login_post():
     email = request.form['email']
     password = request.form['password']
 
-    # # Process the information
-    # print("-----------------------")
-    # print(f"l'email est : {email} et le mot de passe est : {password}")
-    # print("-----------------------")
+    # Process the information
+    print("-----------------------")
+    print(f"Email is : {email} \t\t password is : {password}")
+    print("-----------------------")
 
     # Check the DB
     response = table_login.get_item(Key={"email": email})
+    print("In the loggin with method post, and will try the email in the DB")
     try:
         item = response["Item"]
     except KeyError:
@@ -103,19 +120,23 @@ def login_post():
                                creadential_not_valid=True)
 
     # Session management
+    print("In login route with post method, creation of session variable")
     session["email"] = email
     session["user_name"] = user_name
     session["loggedin"] = True
 
+    print("Will leave the login route with the post methods")
     return redirect("/home")
 
 
 @app.route('/login', methods=['GET'])
 def login_get():
     """ Route login for the method get """
+    print("In the loggin route with get method")
     if is_connected():
+        print("user is connected so redirection to home page")
         return redirect("/home")
-
+    print("render the login page")
     return render_template('login.html')
 
 ################# REGISTER #################
@@ -124,8 +145,10 @@ def login_get():
 @app.route("/register", methods=["POST"])
 def register_post():
     """ Route register for the method post """
+    print("in the register route with the method POST")
     # Check of connection
     if is_connected():
+        print("User already connected so redirection to home page")
         return redirect("/home")
 
     # Get the information from the POST methods
@@ -136,18 +159,18 @@ def register_post():
 
     # Create the client for the dynamoDB table login
     dynamodb = boto3.resource('dynamodb', region_name=REGION,
-                            aws_access_key_id=KEY_ID,
-                            aws_secret_access_key=ACCESS_KEY,
-                            aws_session_token=TOKEN)
+                              aws_access_key_id=KEY_ID,
+                              aws_secret_access_key=ACCESS_KEY,
+                              aws_session_token=TOKEN)
 
     # get the Login table
     table_login = dynamodb.Table(DB_LOGIN)
 
-    # print("-----------------------")
-    # print(f"\nl'email est : {email}, l'user name est :\
-    # {user_name}, le mot de passe est : {password} \
-    # et la confirmation est : {password_confrimation}\n")
-    # print("-----------------------")
+    print("-----------------------")
+    print(f"\n Email is : {email}, user name is :\
+    {user_name}, password is : {password} \
+    confirmation of password is : {password_confrimation}\n")
+    print("-----------------------")
 
     if password != password_confrimation:
         return render_template('register.html',
@@ -157,6 +180,7 @@ def register_post():
     response = table_login.get_item(Key={"email": email})
 
     if "Item" in response:
+        print("email already in the database")
         return render_template("register.html",
                                email_already_exist=True)
 
@@ -175,10 +199,13 @@ def register_post():
 @app.route('/register', methods=['GET'])
 def register_get():
     """ Route register for the method GET  """
+    print("In the register route with the method get")
     # Check of connection
     if is_connected():
+        print("User already connected so redirection to home page")
         return redirect("/home")
 
+    print("Render the register page ")
     return render_template('register.html')
 
 
@@ -186,6 +213,7 @@ def register_get():
 @app.route('/query-music', methods=['POST'])
 def query_music():
     """ Route for search the music in the DB """
+    print("In the route for querry method post")
     # Check of connection
     print("check if connected")
     if (not (is_connected())):
@@ -259,26 +287,92 @@ def query_music():
         result_artist = item["artist"]['S']
         result_web_url = item["web_url"]['S']
         result_image_url = item["image_url"]['S']
+
+        key = f'{result_title}-{result_artist}-{result_year}.jpg'
+
+        image_data = get_s3_object(key)
+        image = f'data:image/jpg;base64,{image_data.hex()}'
+        # save the image data to a file for debugging
+        with open(f's3989748/static/{key}', 'wb') as f:
+            f.write(image_data)
+
         result.append({
             "title": result_title,
             "year": result_year,
             "artist": result_artist,
-            "image_url": result_image_url,
-            "web_url": result_web_url
+            "image": key
         })
         print(
             f'Titre : {result_title},\t\t\t\t Year : {result_year}, \t\t\t\t Artist : {result_artist}')
     print("\n -----------------------")
-    return str(result)
+    return render_template("index.html", is_connected=is_connected(), liste_query=result)
 
 
-###### TEST #######
+########### SUBSCRIPTION ROUTE #############
+@app.route("/subscribe")
+def subscribe():
+    """ Route for new subscription """
+    print("in the route to subscribe to a new artist")
+
+    if not (is_connected()):
+        print("user not connected and attempt to subscribe")
+        return redirect('/login')
+
+    # Get the title, artist and year from the get method
+    title = request.args.get("title")
+    artist = request.args.get("artist")
+    year = request.args.get("year")
+
+    # Get the user information from the session
+    email = session.get("email")
+    user_name = session.get("user_name")
+
+    # Creation of the dynamoDB client
+    dynamodb = boto3.resource('dynamodb', region_name=REGION,
+                              aws_access_key_id=KEY_ID,
+                              aws_secret_access_key=ACCESS_KEY,
+                              aws_session_token=TOKEN)
+
+    # get the Login table
+    table_login = dynamodb.Table(DB_LOGIN)
+
+    # Add the music to the table to the subscription list of the user
+
+    return f"{title}, {artist}, {year}"
 
 
-@app.route("/test")
-def test():
-    # s3_image = get_s3_object()
-    return render_template("index.html", image="test")
+########### REMOVE FROM SUBSCRIPTION ############
+@app.route("/remove")
+def remove():
+    """ Route for remove the subscription """
+    print("In the route for remove a music from the subscription")
+
+    if not (is_connected()):
+        print("user not connected and attempt to remove a song from his subscription list")
+        return redirect('/login')
+
+    # Get the information of the song
+    title = request.args.get("title")
+    artist = request.args.get("artist")
+    year = request.args.get("year")
+
+    # Get the information of the user
+    email = session.get("email")
+    user_name = session.get("user_name")
+
+    # Creation of the client for the dynamoDB resources
+    dynamodb = boto3.resource('dynamodb', region_name=REGION,
+                              aws_access_key_id=KEY_ID,
+                              aws_secret_access_key=ACCESS_KEY,
+                              aws_session_token=TOKEN)
+
+    # get the Login table
+    table_login = dynamodb.Table(DB_LOGIN)
+
+    # Remove the music from the subscription list of the user
+
+    return f"{title}, {artist}, {year}"
+
 ################# ACTION ON TABLE AND BUCKET #################
 
 

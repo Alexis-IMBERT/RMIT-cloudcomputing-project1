@@ -8,6 +8,9 @@ flask = "*"
 flask-sqlalchemy = "*"
 httpx = "*"
 boto3 = "*"
+pillow = "*"
+term-image = "*"
+matplotlib = "*"
 
 [dev-packages]
 ipykernel = "*"
