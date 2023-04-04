@@ -13,6 +13,8 @@ from .aws.cleaning import cleaning_db_login
 from .aws.cleaning import cleaning_db_music
 from .aws.cleaning import cleaning_bucket_music
 from .aws import DB_MUSIC
+from .aws import REGION
+
 app = Flask(__name__)
 
 
@@ -64,7 +66,7 @@ def login_post():
         return redirect("/home")
 
     # Create the client for the dynamoDB table login
-    dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb', region_name=REGION)
 
     # get the Login table
     table_login = dynamodb.Table(DB_LOGIN)
@@ -127,7 +129,7 @@ def register_post():
     user_name = request.form["username"]
 
     # Create the client for the dynamoDB table login
-    dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb', region_name=REGION)
 
     # get the Login table
     table_login = dynamodb.Table(DB_LOGIN)
@@ -191,7 +193,7 @@ def query_music():
         f"the variable are :\n\t - title : {title},\n\t - artist : {artist},\n\t - year : {year}")
 
     # Creation of the client
-    dynamodb = boto3.client('dynamodb')
+    dynamodb = boto3.client('dynamodb', region_name=REGION)
 
     # Define the table name
     table_name = DB_MUSIC

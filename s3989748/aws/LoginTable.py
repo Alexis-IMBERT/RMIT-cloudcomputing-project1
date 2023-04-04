@@ -6,13 +6,14 @@ from ..aws import END_MAIL
 from ..aws import FIRST_NAME
 from ..aws import LAST_NAME
 from ..aws import DB_LOGIN
+from ..aws import REGION
 
 
 def create_login_table():
     """ Create the login table """
 
     # Create a DynamoDB client
-    dynamodb = boto3.client('dynamodb')
+    dynamodb = boto3.client('dynamodb', region_name=REGION)
 
     # Define the table name and its attributes
     table_name = DB_LOGIN
