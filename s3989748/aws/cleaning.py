@@ -9,7 +9,10 @@ from ..aws import BUCKET_MUSIC_NAME
 def cleaning_database(table_name):
     """ delete the data base with the given name """
     # Get the service resource.
-    dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb', region_name=REGION,
+                            aws_access_key_id=KEY_ID,
+                            aws_secret_access_key=ACCESS_KEY,
+                            aws_session_token=TOKEN)
     # If the table does not exist we pass
     try:
         # Selection of the Table

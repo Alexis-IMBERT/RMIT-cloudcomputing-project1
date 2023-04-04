@@ -51,7 +51,10 @@ def creation_music_table():
 def fill_music_table():
     """ filling the music table with the json file """
     # Get the service resource.
-    dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb', region_name=REGION,
+                            aws_access_key_id=KEY_ID,
+                            aws_secret_access_key=ACCESS_KEY,
+                            aws_session_token=TOKEN)
 
     # get the Login table
     table_music = dynamodb.Table(DB_MUSIC)
