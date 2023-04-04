@@ -69,7 +69,10 @@ def login_post():
         return redirect("/home")
 
     # Create the client for the dynamoDB table login
-    dynamodb = boto3.resource('dynamodb', region_name=REGION)
+    dynamodb = boto3.resource('dynamodb', region_name=REGION,
+                            aws_access_key_id=KEY_ID,
+                            aws_secret_access_key=ACCESS_KEY,
+                            aws_session_token=TOKEN)
 
     # get the Login table
     table_login = dynamodb.Table(DB_LOGIN)
@@ -132,7 +135,10 @@ def register_post():
     user_name = request.form["username"]
 
     # Create the client for the dynamoDB table login
-    dynamodb = boto3.resource('dynamodb', region_name=REGION)
+    dynamodb = boto3.resource('dynamodb', region_name=REGION,
+                            aws_access_key_id=KEY_ID,
+                            aws_secret_access_key=ACCESS_KEY,
+                            aws_session_token=TOKEN)
 
     # get the Login table
     table_login = dynamodb.Table(DB_LOGIN)

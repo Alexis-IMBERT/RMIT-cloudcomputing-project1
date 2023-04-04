@@ -3,12 +3,19 @@ import json
 
 from ..aws import JSON_FILE_PATH
 from ..aws import DB_MUSIC
-
+from ..aws import REGION
+from ..aws import TOKEN
+from ..aws import ACCESS_KEY
+from ..aws import KEY_ID
 
 def creation_music_table():
     """ creation of the music table """
     # Create a DynamoDB client
-    dynamodb = boto3.client('dynamodb')
+    dynamodb = boto3.client('dynamodb',
+                            region_name=REGION,
+                            aws_access_key_id=KEY_ID,
+                            aws_secret_access_key=ACCESS_KEY,
+                            aws_session_token=TOKEN)
 
     # Define the table name and its attributes
     table_name = DB_MUSIC

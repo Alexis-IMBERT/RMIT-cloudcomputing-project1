@@ -7,13 +7,18 @@ from ..aws import FIRST_NAME
 from ..aws import LAST_NAME
 from ..aws import DB_LOGIN
 from ..aws import REGION
-
+from ..aws import TOKEN
+from ..aws import ACCESS_KEY
+from ..aws import KEY_ID
 
 def create_login_table():
     """ Create the login table """
 
     # Create a DynamoDB client
-    dynamodb = boto3.client('dynamodb', region_name=REGION)
+    dynamodb = boto3.client('dynamodb', region_name=REGION,
+                            aws_access_key_id=KEY_ID,
+                            aws_secret_access_key=ACCESS_KEY,
+                            aws_session_token=TOKEN)
 
     # Define the table name and its attributes
     table_name = DB_LOGIN
