@@ -14,6 +14,9 @@ from .aws.cleaning import cleaning_db_music
 from .aws.cleaning import cleaning_bucket_music
 from .aws import DB_MUSIC
 from .aws import REGION
+from .aws import KEY_ID
+from .aws import ACCESS_KEY
+from .aws import TOKEN
 
 app = Flask(__name__)
 
@@ -193,7 +196,10 @@ def query_music():
         f"the variable are :\n\t - title : {title},\n\t - artist : {artist},\n\t - year : {year}")
 
     # Creation of the client
-    dynamodb = boto3.client('dynamodb', region_name=REGION)
+    dynamodb = boto3.client('dynamodb', region_name=REGION,
+                            aws_access_key_id=KEY_ID,
+                            aws_secret_access_key=ACCESS_KEY,
+                            aws_session_token=TOKEN)
 
     # Define the table name
     table_name = DB_MUSIC
