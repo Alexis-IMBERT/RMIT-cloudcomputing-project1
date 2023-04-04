@@ -3,7 +3,6 @@ from flask import Flask
 
 from .views import app
 from . import models
-from .models import db
 
 
 @app.cli.command()
