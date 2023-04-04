@@ -14,11 +14,11 @@
 - [x] after user login show the user_name
 - [x] after user logout redirect to login page
 - [ ] Query area 
-    - [ ] If the queried information is contained in (one or more) entities’ corresponding attribute value(s) in the music table, the area will show
-    - [ ] If the queried information is not contained in the entities’ corresponding attribute value(s) in the music table, it will show “No result is retrieved. Please query again”.
-    - [ ] All the retrieved music information (title, artist, and year).
-    - [ ] Each music information is followed by the corresponding artist images retrieved from S3 and a “Subscribe” button.
-    - [ ] If the user clicks a “Subscribe” button, the subscribed music information and the corresponding artist image will be added into the subscription area and the subscribed music information will be stored in DynamoDB.
+    - [x] If the queried information is contained in (one or more) entities’ corresponding attribute value(s) in the music table, the area will show
+        - [x] All the retrieved music information (title, artist, and year).
+        - [x] Each music information is followed by the corresponding artist images retrieved from S3 and a “Subscribe” button.
+        - [ ] If the user clicks a “Subscribe” button, the subscribed music information and the corresponding artist image will be added into the subscription area and the subscribed music information will be stored in DynamoDB.
+    - [x] If the queried information is not contained in the entities’ corresponding attribute value(s) in the music table, it will show “No result is retrieved. Please query again”.
 - [ ] Subscription area :
     - [ ] The subscription area will show all the user subscribed music information (title, artist, and year) stored in DynamoDB.
     - [ ] Each music information is followed by the corresponding artist image retrieved from S3 and a “Remove” button.
