@@ -9,7 +9,10 @@ from botocore.exceptions import ClientError
 
 from ..aws import JSON_FILE_PATH
 from ..aws import BUCKET_MUSIC_NAME
-
+from ..aws import REGION
+from ..aws import TOKEN
+from ..aws import ACCESS_KEY
+from ..aws import KEY_ID
 
 def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region=None):
     """
