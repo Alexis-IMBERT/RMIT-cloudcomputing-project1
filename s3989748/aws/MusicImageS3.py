@@ -19,7 +19,10 @@ def creation_bucket(bucket_name=BUCKET_MUSIC_NAME, region=None):
     :return: True if the bucket is created, else False 
     """
     # Get the client s3
-    s3_client = boto3.client('s3')
+    s3_client = boto3.client('s3', region_name=REGION,
+                            aws_access_key_id=KEY_ID,
+                            aws_secret_access_key=ACCESS_KEY,
+                            aws_session_token=TOKEN)
 
     # Create bucket
     try:
