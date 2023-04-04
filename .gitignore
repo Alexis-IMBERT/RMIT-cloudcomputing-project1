@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,flask,visualstudiocode,emacs,vim
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,flask,visualstudiocode,emacs,vim
 
+*.jpg
 ### Emacs ###
 # -*- mode: gitignore; -*-
 *~
