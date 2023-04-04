@@ -48,7 +48,10 @@ def fill_bucket(bucket_name=BUCKET_MUSIC_NAME):
 
     """
     # Create a S3 client
-    s3_client = boto3.resource('s3')
+    s3_client = boto3.resource('s3', region_name=REGION,
+                            aws_access_key_id=KEY_ID,
+                            aws_secret_access_key=ACCESS_KEY,
+                            aws_session_token=TOKEN)
 
     # opening of the json file
     json_file_path = JSON_FILE_PATH
