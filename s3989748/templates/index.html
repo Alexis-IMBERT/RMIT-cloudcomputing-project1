@@ -3,7 +3,7 @@
 {% block content %}
 
 <h1>Main Area</h1>
-{% if (is_connected) %}
+{% if session.get("loggedin") %}
 <h2>Subscription Area</h2>
 <ul>
     {% for item in liste_subscription:%}

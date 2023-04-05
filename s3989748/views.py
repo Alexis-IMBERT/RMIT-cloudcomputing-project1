@@ -59,7 +59,7 @@ def index():
     print("In the route index/home/ /")
     if not (is_connected()):
         print("user not connected")
-        return render_template("index.html", is_connected=is_connected())
+        return render_template("index.html")
 
 
     # Get usefull sessions variable
@@ -94,7 +94,7 @@ def index():
         print(
             f'Titre : {result_title},\t\t\t\t Year : {result_year}, \t\t\t\t Artist : {result_artist}')
 
-    return render_template("index.html", is_connected=True, user_name=user_name, liste_subscription=songs)
+    return render_template("index.html", liste_subscription=songs)
 
 
 @app.route("/logout")
@@ -340,7 +340,7 @@ def query_music():
         print(
             f'Titre : {result_title},\t\t\t\t Year : {result_year}, \t\t\t\t Artist : {result_artist}')
     print("\n -----------------------")
-    return render_template("index.html", is_connected=is_connected(), liste_query=result)
+    return render_template("index.html", liste_query=result)
 
 
 ########### SUBSCRIPTION ROUTE #############
