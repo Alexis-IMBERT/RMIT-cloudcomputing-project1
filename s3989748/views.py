@@ -27,6 +27,7 @@ from .aws import ACCESS_KEY
 from .aws import TOKEN
 from .aws.LoginTable import add_to_subscription_list
 from .aws.LoginTable import get_songs
+from .aws.LoginTable import delete_music
 app = Flask(__name__)
 
 
@@ -61,11 +62,10 @@ def index():
         print("user not connected")
         return render_template("index.html")
 
-
     # Get usefull sessions variable
     user_name = session.get("user_name")
     email = session.get("email")
-    
+
     print(f"user : {user_name} connected")
 
     # get the song's list of the user
@@ -349,6 +349,7 @@ def subscribe():
     """ Route for new subscription """
     print("in the route to subscribe to a new artist")
 
+    # Check if user is login
     if not (is_connected()):
         print("user not connected and attempt to subscribe")
         return redirect('/login')
@@ -360,13 +361,21 @@ def subscribe():
 
     # Get the user information from the session
     email = session.get("email")
+    user_name = session.get("user_name")
 
     new_song = {'title': title, 'artist': artist, 'year': year}
+
+    # Get the old song's list
+    old_songs = get_songs(email)
+    # Check if the song is already in the list
+    if new_song in old_songs:
+        print(f"song {new_song} already in the song's list of {user_name}")
+        return redirect("/home")
 
     # Add the music to the table to the subscription list of the user
     add_to_subscription_list(email, new_song)
 
-    return f"{title}, {artist}, {year}"
+    return redirect("/home")
 
 
 ########### REMOVE FROM SUBSCRIPTION ############
@@ -375,6 +384,7 @@ def remove():
     """ Route for remove the subscription """
     print("In the route for remove a music from the subscription")
 
+    # Check if the user is login
     if not (is_connected()):
         print("user not connected and attempt to remove a song from his subscription list")
         return redirect('/login')
@@ -388,18 +398,11 @@ def remove():
     email = session.get("email")
     user_name = session.get("user_name")
 
-    # Creation of the client for the dynamoDB resources
-    dynamodb = boto3.resource('dynamodb', region_name=REGION,
-                              aws_access_key_id=KEY_ID,
-                              aws_secret_access_key=ACCESS_KEY,
-                              aws_session_token=TOKEN)
-
-    # get the Login table
-    table_login = dynamodb.Table(DB_LOGIN)
-
     # Remove the music from the subscription list of the user
+    delete_music(email, music_title=title,
+                 music_artist=artist, music_year=year)
 
-    return f"{title}, {artist}, {year}"
+    return redirect("/home")
 
 ################# ACTION ON TABLE AND BUCKET #################
 

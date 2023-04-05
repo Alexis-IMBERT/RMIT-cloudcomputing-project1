@@ -161,29 +161,37 @@ def delete_music(email: str, music_title: str, music_artist: str, music_year: st
     :param music_year: year's music
     """
     dynamodb = boto3.resource('dynamodb')
-
+    client_dynamodb = boto3.client('dynamodb',
+                                region_name=REGION,
+                                aws_access_key_id=KEY_ID,
+                                aws_secret_access_key=ACCESS_KEY,
+                                aws_session_token=TOKEN)
     table_name = DB_LOGIN
     table = dynamodb.Table(table_name)
 
     old_songs = get_songs(email)
 
-    response = table.update_item(
-        Key={
-            'email': email
-        },
-        UpdateExpression='SET #songs = :new_songs',
-        ConditionExpression='contains(songs, :music)',
-        ExpressionAttributeNames={
-            '#songs': 'songs'
-        },
-        ExpressionAttributeValues={
-            ':music': {'title': music_title, 'artist': music_artist, 'year': music_year},
-            ':new_songs': [song for song in old_songs if song != {'title': music_title, 'artist': music_artist, 'year': music_year}]
-        },
-        ReturnValues="UPDATED_NEW"
-    )
+    try:
+        response = table.update_item(
+            Key={
+                'email': email
+            },
+            UpdateExpression='SET #songs = :new_songs',
+            ConditionExpression='contains(songs, :music)',
+            ExpressionAttributeNames={
+                '#songs': 'songs'
+            },
+            ExpressionAttributeValues={
+                ':music': {'title': music_title, 'artist': music_artist, 'year': music_year},
+                ':new_songs': [song for song in old_songs if song != {'title': music_title, 'artist': music_artist, 'year': music_year}]
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+        print(response)
+        
+    except client_dynamodb.exceptions.ConditionalCheckFailedException:
+        pass
 
-    print(response)
 
 
 if __name__ == "__main__":
