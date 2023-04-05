@@ -340,6 +340,8 @@ def query_music():
         print(
             f'Titre : {result_title},\t\t\t\t Year : {result_year}, \t\t\t\t Artist : {result_artist}')
     print("\n -----------------------")
+    if not result:
+        return render_template("index.html", querry_empty_result=True)
     return render_template("index.html", liste_query=result)
 
 
