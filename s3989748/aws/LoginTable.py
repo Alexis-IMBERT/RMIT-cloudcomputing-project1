@@ -109,11 +109,10 @@ def add_to_subscription_list(email: str, new_song: list[str, str, str]) -> None:
     music_title = new_song["title"]
     music_artist = new_song["artist"]
     music_year = new_song["year"]
-    
+
     print("-------------------------------------")
     print(f"email : {email}")
     print("-------------------------------------")
-    
 
     response = table_login.update_item(
         Key={
@@ -129,6 +128,62 @@ def add_to_subscription_list(email: str, new_song: list[str, str, str]) -> None:
         }
     )
     print(f'Successfully added {new_song} subscription for email {email}')
+
+
+def get_songs(email: str) -> list:
+    """ 
+    Get the song of user's list
+    :param email: user's email
+    :return: song's list
+    """
+    dynamodb = boto3.resource('dynamodb')
+
+    table_name = DB_LOGIN
+    table = dynamodb.Table(table_name)
+    response = table.get_item(
+        Key={
+            'email': email
+        },
+        ProjectionExpression='songs'
+    )
+
+    item = response.get('Item')
+
+    return item.get('songs', []) if item else []
+
+
+def delete_music(email: str, music_title: str, music_artist: str, music_year: str):
+    """ 
+    will delete a given music from the login table
+    :param email: email of the user
+    :param music_title: the title of the music
+    :param music_artist: the artist of the music
+    :param music_year: year's music
+    """
+    dynamodb = boto3.resource('dynamodb')
+
+    table_name = DB_LOGIN
+    table = dynamodb.Table(table_name)
+
+    old_songs = get_songs(email)
+
+    response = table.update_item(
+        Key={
+            'email': email
+        },
+        UpdateExpression='SET #songs = :new_songs',
+        ConditionExpression='contains(songs, :music)',
+        ExpressionAttributeNames={
+            '#songs': 'songs'
+        },
+        ExpressionAttributeValues={
+            ':music': {'title': music_title, 'artist': music_artist, 'year': music_year},
+            ':new_songs': [song for song in old_songs if song != {'title': music_title, 'artist': music_artist, 'year': music_year}]
+        },
+        ReturnValues="UPDATED_NEW"
+    )
+
+    print(response)
 
 
 if __name__ == "__main__":

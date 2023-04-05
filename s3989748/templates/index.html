@@ -3,6 +3,7 @@
 {% block content %}
 
 <h1>Main Area</h1>
+{% if (is_connected) %}
 <h2>Subscription Area</h2>
 <ul>
     {% for item in liste_subscription:%}
@@ -10,8 +11,8 @@
         <p> {{item["title"]}} </p>
         <p> {{item["artist"]}} </p>
         <p> {{item["year"]}} </p>
-        <p> {{item["image_url"]}} </p>
-        <button type="button" onclick="window.location.href = `{{url_for('subscribe', title=item['title'], artist=item['artist'], year=item['year'] )}}`;">Remove</button>
+	    <img src="{{ url_for('static', filename=item['image']) }}" alt="artist image">
+        <button type="button" onclick="window.location.href = `{{url_for('remove', title=item['title'], artist=item['artist'], year=item['year'] )}}`;">Remove</button>
     </li>
     {% endfor %}
 </ul>
@@ -50,6 +51,7 @@
     {% endfor %}
 </ul>
 
+{%endif%}
 
 {% endblock %}
 

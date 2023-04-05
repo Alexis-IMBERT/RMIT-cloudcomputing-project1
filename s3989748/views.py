@@ -26,6 +26,7 @@ from .aws import KEY_ID
 from .aws import ACCESS_KEY
 from .aws import TOKEN
 from .aws.LoginTable import add_to_subscription_list
+from .aws.LoginTable import get_songs
 app = Flask(__name__)
 
 
@@ -56,10 +57,44 @@ def b64encode_filter(s):
 def index():
     """ Route index """
     print("In the route index/home/ /")
-    if is_connected():
-        user_name = session.get("user_name")
-        return render_template("index.html", is_connected=True, user_name=user_name)
-    return render_template("index.html", is_connected=is_connected())
+    if not (is_connected()):
+        print("user not connected")
+        return render_template("index.html", is_connected=is_connected())
+
+
+    # Get usefull sessions variable
+    user_name = session.get("user_name")
+    email = session.get("email")
+    
+    print(f"user : {user_name} connected")
+
+    # get the song's list of the user
+    list_songs_db = get_songs(email)
+
+    songs = []
+
+    for song in list_songs_db:
+        result_title = song["title"]
+        result_artist = song["artist"]
+        result_year = song["year"]
+
+        key = f'{result_title}-{result_artist}-{result_year}.jpg'
+        image_data = get_s3_object(key)
+
+        # save the image data to a file for debugging
+        with open(f's3989748/static/{key}', 'wb') as f:
+            f.write(image_data)
+
+        songs.append({
+            "title": result_title,
+            "year": result_year,
+            "artist": result_artist,
+            "image": key
+        })
+        print(
+            f'Titre : {result_title},\t\t\t\t Year : {result_year}, \t\t\t\t Artist : {result_artist}')
+
+    return render_template("index.html", is_connected=True, user_name=user_name, liste_subscription=songs)
 
 
 @app.route("/logout")
