@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+""" Definition of funciton in relation with Login table """
 import boto3
 
 from ..aws import STUDENT_ID
@@ -10,6 +11,7 @@ from ..aws import REGION
 from ..aws import TOKEN
 from ..aws import ACCESS_KEY
 from ..aws import KEY_ID
+
 
 def create_login_table():
     """ Create the login table """
@@ -34,13 +36,16 @@ def create_login_table():
     ]
     provisioned_throughput = {'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5}
 
-    # Create the table with the specified attributes and throughput
-    dynamodb.create_table(
-        TableName=table_name,
-        KeySchema=key_schema,
-        AttributeDefinitions=attribute_definitions,
-        ProvisionedThroughput=provisioned_throughput
-    )
+    try:
+        # Create the table with the specified attributes and throughput
+        dynamodb.create_table(
+            TableName=table_name,
+            KeySchema=key_schema,
+            AttributeDefinitions=attribute_definitions,
+            ProvisionedThroughput=provisioned_throughput
+        )
+    except dynamodb.exceptions.ResourceInUseException:
+        pass
 
     # Wait for the table to be created
     waiter = dynamodb.get_waiter('table_exists')
@@ -66,9 +71,9 @@ def fill_login_table():
     """ fill the login table as ask on the assignement """
     # Get the service resource.
     dynamodb = boto3.resource('dynamodb', region_name=REGION,
-                            aws_access_key_id=KEY_ID,
-                            aws_secret_access_key=ACCESS_KEY,
-                            aws_session_token=TOKEN)
+                              aws_access_key_id=KEY_ID,
+                              aws_secret_access_key=ACCESS_KEY,
+                              aws_session_token=TOKEN)
 
     # get the Login table
     table_login = dynamodb.Table(DB_LOGIN)
@@ -87,7 +92,46 @@ def fill_login_table():
         table_login.put_item(Item=value)
 
 
-if (__name__ == "__main__"):
+def add_to_subscription_list(email: str, new_song: list[str, str, str]) -> None:
+    """
+    Update the subscription list of a person
+    :param email: The email of the user key of the table
+    :param new_songs: the song to add at the subscription list
+    :return: None
+    """
+    # Get the service resource.
+    dynamodb = boto3.resource('dynamodb', region_name=REGION,
+                              aws_access_key_id=KEY_ID,
+                              aws_secret_access_key=ACCESS_KEY,
+                              aws_session_token=TOKEN)
+    # get the Login table
+    table_login = dynamodb.Table(DB_LOGIN)
+    music_title = new_song["title"]
+    music_artist = new_song["artist"]
+    music_year = new_song["year"]
+    
+    print("-------------------------------------")
+    print(f"email : {email}")
+    print("-------------------------------------")
+    
+
+    response = table_login.update_item(
+        Key={
+            'email': email
+        },
+        UpdateExpression='SET #songs = list_append(if_not_exists(#songs, :empty_list), :new_music)',
+        ExpressionAttributeNames={
+            '#songs': 'songs'
+        },
+        ExpressionAttributeValues={
+            ':new_music': [{'title': music_title, 'artist': music_artist, 'year': music_year}],
+            ':empty_list': []
+        }
+    )
+    print(f'Successfully added {new_song} subscription for email {email}')
+
+
+if __name__ == "__main__":
     # create_login_table()
     fill_login_table()
     print("Return 0")

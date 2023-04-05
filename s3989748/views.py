@@ -25,7 +25,7 @@ from .aws import REGION
 from .aws import KEY_ID
 from .aws import ACCESS_KEY
 from .aws import TOKEN
-
+from .aws.LoginTable import add_to_subscription_list
 app = Flask(__name__)
 
 
@@ -325,18 +325,11 @@ def subscribe():
 
     # Get the user information from the session
     email = session.get("email")
-    user_name = session.get("user_name")
 
-    # Creation of the dynamoDB client
-    dynamodb = boto3.resource('dynamodb', region_name=REGION,
-                              aws_access_key_id=KEY_ID,
-                              aws_secret_access_key=ACCESS_KEY,
-                              aws_session_token=TOKEN)
-
-    # get the Login table
-    table_login = dynamodb.Table(DB_LOGIN)
+    new_song = {'title': title, 'artist': artist, 'year': year}
 
     # Add the music to the table to the subscription list of the user
+    add_to_subscription_list(email, new_song)
 
     return f"{title}, {artist}, {year}"
 

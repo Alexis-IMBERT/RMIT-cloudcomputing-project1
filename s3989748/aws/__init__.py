@@ -1,11 +1,4 @@
-# import sys
-# sys.path.append('../../variable')
-
-# from ...variable import STUDENT_ID
-# from ...variable import END_MAIL
-# from ...variable import FIRST_NAME
-# from ...variable import LAST_NAME
-
+""" Initialisation of aws package and creation of several variable """
 STUDENT_ID = "s3989748"
 END_MAIL = "@student.rmit.edu.au"
 FIRST_NAME = "Alexis"
@@ -18,6 +11,6 @@ DB_LOGIN = "login"
 BUCKET_MUSIC_NAME = "s3989748-music-s3"
 REGION = "us-east-1"
 
-KEY_ID = "ASIAQTDQASWDI4EZH6GN"
-ACCESS_KEY = "5eStX7FEJxC6tM2AuMqvWhhe5WYNSx43HyJDw4ll"
-TOKEN = "FwoGZXIvYXdzEBoaDKMSL3qLvaBnlrIpgiLNAc8MNjQ3KtFAiTNQ4O6VJWQStNcjPQ0r0tkjiYJD63RY4APD72abs44/TfUwX4nHtZcV9rx/msYE9IYOlmUSBbxP5EX/UVTT6mro/KF5y9bFIBUqXaQ4jutyAUxLAbcl53HF9dmRzHMefOw5CW5hSDcqSEqwEpoNyIiU+rKhgcS3DUauUmgRhCd1aENYN+nLfIx1zOKfYmaYZHq4zMobgctSvjKXZdpSViVkT3q85ACxmcpNIDCBBZrqfMqpRyaSU+ZlfMBao7G21Dv8s7ko3tutoQYyLctH+bn7w/sxnFAA31VJKGKeKbDjo5+DGcgUbJaGcBTeDzFCOfUGwIIqWOI4TQ=="
+KEY_ID = "ASIAQTDQASWDBWUUGCFO"
+ACCESS_KEY = "+TusUTd+SbbXuGL1gLNSB9mhzIThxqpw795b1pWE"
+TOKEN = "FwoGZXIvYXdzEDAaDBUq0uj9eKrWjkdhHSLNASDFgRxDUkFw9BZ8fYnYAnswnINYombQPxO5701PYuUrMrrTLQhdprLE6TEUh9JRIHqLDEnPn5cjKHPsRRm9OIr4hwe1r273fC0bxt4M96GeXdRyWRphKExdFIsMnsRarDqleIP6VtsXYgS6TXDxSGFdMeFiM8Oax19Ln3WPfKcBibHmbLCTINjRYnbJtD/IPqdsowD7E6aJ2JoL5uTVp4k7mU8DSCNWViJqDXCoDit/1OKyRC+MAk6cJ1SqAIsLQ+a2YoAUkBZDxAq0XvAorsyyoQYyLZ+lksRP6gM7kcWK6rnA3rjDudwFuPXgJhYnjRF1UJX9T+BzU2LqorduIGXAEg=="

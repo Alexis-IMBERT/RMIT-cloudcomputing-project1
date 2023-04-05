@@ -32,13 +32,16 @@ def creation_music_table():
     ]
     provisioned_throughput = {'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5}
 
-    # Create the table with the specified attributes and throughput
-    dynamodb.create_table(
-        TableName=table_name,
-        KeySchema=key_schema,
-        AttributeDefinitions=attribute_definitions,
-        ProvisionedThroughput=provisioned_throughput
-    )
+    try:
+        # Create the table with the specified attributes and throughput
+        dynamodb.create_table(
+            TableName=table_name,
+            KeySchema=key_schema,
+            AttributeDefinitions=attribute_definitions,
+            ProvisionedThroughput=provisioned_throughput
+        )
+    except dynamodb.exceptions.ResourceInUseException:
+        pass
 
     # Wait for the table to be created
     waiter = dynamodb.get_waiter('table_exists')
