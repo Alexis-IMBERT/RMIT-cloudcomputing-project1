@@ -15,6 +15,7 @@ from ..aws import KEY_ID
 
 def create_login_table():
     """ Create the login table """
+    print("creating login table")
 
     # Create a DynamoDB client
     dynamodb = boto3.client('dynamodb', region_name=REGION,
@@ -57,6 +58,7 @@ def create_login_table():
 
 def generate_password():
     """ generate the password as asked in the assignement """
+    print("generate password for login table")
     password_base = "0123456789"
     password = []
     for i in range(10):
@@ -69,6 +71,7 @@ def generate_password():
 
 def fill_login_table():
     """ fill the login table as ask on the assignement """
+    print("fill login table")
     # Get the service resource.
     dynamodb = boto3.resource('dynamodb', region_name=REGION,
                               aws_access_key_id=KEY_ID,
@@ -99,6 +102,7 @@ def add_to_subscription_list(email: str, new_song: list[str, str, str]) -> None:
     :param new_songs: the song to add at the subscription list
     :return: None
     """
+    print("add to subscription list ")
     # Get the service resource.
     dynamodb = boto3.resource('dynamodb', region_name=REGION,
                               aws_access_key_id=KEY_ID,
@@ -114,7 +118,7 @@ def add_to_subscription_list(email: str, new_song: list[str, str, str]) -> None:
     print(f"email : {email}")
     print("-------------------------------------")
 
-    response = table_login.update_item(
+    table_login.update_item(
         Key={
             'email': email
         },
@@ -136,6 +140,7 @@ def get_songs(email: str) -> list:
     :param email: user's email
     :return: song's list
     """
+    print(f"in the function getting song for the email : {email}")
     dynamodb = boto3.resource('dynamodb')
 
     table_name = DB_LOGIN
@@ -160,6 +165,11 @@ def delete_music(email: str, music_title: str, music_artist: str, music_year: st
     :param music_artist: the artist of the music
     :param music_year: year's music
     """
+    print(f"in the function to delete a music from subscription\n\
+        \t email {email}\
+            \t title {music_title}\
+                \t artist {music_artist}\
+                    \t year {music_year}")
     dynamodb = boto3.resource('dynamodb')
     client_dynamodb = boto3.client('dynamodb',
                                 region_name=REGION,

@@ -9,6 +9,7 @@ from ..aws import REGION, KEY_ID, ACCESS_KEY, TOKEN
 
 def cleaning_database(table_name):
     """ delete the data base with the given name """
+    print(f"cleaning data base {table_name}")
     # Get the service resource.
     dynamodb = boto3.resource('dynamodb', region_name=REGION,
                               aws_access_key_id=KEY_ID,
@@ -38,6 +39,7 @@ def cleaning_db_music():
 
 def delete_all_object(bucket_name):
     """ delete all teh object of the bucket bucket_name """
+    print(f"deleting all the object from the bucket {bucket_name}")
     # Get the service resource.
     s3 = boto3.client('s3', region_name=REGION,
                       aws_access_key_id=KEY_ID,
@@ -62,6 +64,7 @@ def delete_all_object(bucket_name):
 
 def cleaning_bucket_music():
     """ Clean the bucket where are the images """
+    print("cleaning the bucket music")
     s3 = boto3.client('s3', region_name=REGION,
                             aws_access_key_id=KEY_ID,
                             aws_secret_access_key=ACCESS_KEY,

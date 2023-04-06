@@ -1,17 +1,13 @@
-import base64
-from io import BytesIO
 import boto3
-from flask import Flask, render_template
-from PIL import Image
-import matplotlib.pyplot as plt
-import base64
 
-from flask import Flask, render_template, redirect, request, session, url_for
-# from .aws.MusicImageS3 import get_s3_object
+from flask import Flask, render_template, redirect, request, session
 
 from .aws import DB_LOGIN
 from .aws.LoginTable import create_login_table
 from .aws.LoginTable import fill_login_table
+from .aws.LoginTable import add_to_subscription_list
+from .aws.LoginTable import get_songs
+from .aws.LoginTable import delete_music
 from .aws.MusicTable import creation_music_table
 from .aws.MusicTable import fill_music_table
 from .aws.MusicImageS3 import creation_bucket
@@ -25,9 +21,6 @@ from .aws import REGION
 from .aws import KEY_ID
 from .aws import ACCESS_KEY
 from .aws import TOKEN
-from .aws.LoginTable import add_to_subscription_list
-from .aws.LoginTable import get_songs
-from .aws.LoginTable import delete_music
 app = Flask(__name__)
 
 
@@ -46,19 +39,13 @@ def is_connected():
     return bool(loggedin)
 
 
-# Register custom Jinja2 filter
-@app.template_filter('b64encode')
-def b64encode_filter(s):
-    return base64.b64encode(s.encode('utf-8')).decode('utf-8')
-
-
 @app.route('/')
 @app.route('/index/')
 @app.route('/home')
 def index():
     """ Route index """
     print("In the route index/home/ /")
-    if not (is_connected()):
+    if not is_connected():
         print("user not connected")
         return render_template("index.html")
 
@@ -92,7 +79,8 @@ def index():
             "image": key
         })
         print(
-            f'Titre : {result_title},\t\t\t\t Year : {result_year}, \t\t\t\t Artist : {result_artist}')
+            f'Titre : {result_title},\t\t\t\t Year : {result_year},\
+                \t\t\t\t Artist : {result_artist}')
 
     return render_template("index.html", liste_subscription=songs)
 
@@ -101,7 +89,7 @@ def index():
 def logout():
     """ route logout """
     print("in route logout")
-    if (is_connected()):
+    if is_connected():
         session.pop("loggedin", None)
         session.pop("email", None)
         session.pop("user_name", None)
@@ -251,7 +239,7 @@ def query_music():
     print("In the route for querry method post")
     # Check of connection
     print("check if connected")
-    if (not (is_connected())):
+    if not is_connected():
         print("not connected")
         return redirect("/home")
     print("connected")
@@ -320,16 +308,13 @@ def query_music():
         result_title = item["title"]['S']
         result_year = item["year"]['S']
         result_artist = item["artist"]['S']
-        result_web_url = item["web_url"]['S']
-        result_image_url = item["image_url"]['S']
 
         key = f'{result_title}-{result_artist}-{result_year}.jpg'
 
         image_data = get_s3_object(key)
-        image = f'data:image/jpg;base64,{image_data.hex()}'
         # save the image data to a file for debugging
-        with open(f's3989748/static/{key}', 'wb') as f:
-            f.write(image_data)
+        with open(f's3989748/static/{key}', 'wb') as image:
+            image.write(image_data)
 
         result.append({
             "title": result_title,
@@ -338,7 +323,8 @@ def query_music():
             "image": key
         })
         print(
-            f'Titre : {result_title},\t\t\t\t Year : {result_year}, \t\t\t\t Artist : {result_artist}')
+            f'Titre : {result_title},\t\t\t\t Year : {result_year},\
+                \t\t\t\t Artist : {result_artist}')
     print("\n -----------------------")
     if not result:
         return render_template("index.html", querry_empty_result=True)
@@ -352,7 +338,7 @@ def subscribe():
     print("in the route to subscribe to a new artist")
 
     # Check if user is login
-    if not (is_connected()):
+    if not is_connected():
         print("user not connected and attempt to subscribe")
         return redirect('/login')
 
@@ -398,7 +384,6 @@ def remove():
 
     # Get the information of the user
     email = session.get("email")
-    user_name = session.get("user_name")
 
     # Remove the music from the subscription list of the user
     delete_music(email, music_title=title,
@@ -412,6 +397,7 @@ def remove():
 @app.route("/login/createtable")
 def login_create_table():
     """ Route to create the table login """
+    print("In route login create table")
     create_login_table()
     return "login table created"
 
@@ -419,6 +405,7 @@ def login_create_table():
 @app.route("/login/filltable")
 def login_fill_table():
     """ route to fill the table login """
+    print("in route login fill table")
     fill_login_table()
     return "login table is now fill"
 
@@ -426,6 +413,7 @@ def login_fill_table():
 @app.route("/music/createtable")
 def music_create_table():
     """ Route to create the table music """
+    print("in route music create table")
     creation_music_table()
     return "music table has been created"
 
@@ -433,6 +421,7 @@ def music_create_table():
 @app.route("/music/filltable")
 def music_fill_table():
     """ Route to fill the table music """
+    print("in route music filltable")
     fill_music_table()
     return "Music table has been filled"
 
@@ -440,6 +429,7 @@ def music_fill_table():
 @app.route("/music/createbucket")
 def music_create_bucket():
     """ Route to create the bucket s3  """
+    print("in route music create bucket")
     result = creation_bucket()
     return f"The bucket has been created : {result} "
 
@@ -447,6 +437,7 @@ def music_create_bucket():
 @app.route("/music/fillbucket")
 def music_fill_bucket():
     """ Route to fill the bucket s3 with images of music """
+    print("in route music fillbucket")
     fill_bucket()
     return "The bucket has been filled"
 
@@ -454,6 +445,7 @@ def music_fill_bucket():
 @app.route("/clean/table/login")
 def cleaning_login_table():
     """ Route to clean the login table """
+    print("in route clean table login")
     cleaning_db_login()
     return "Login DB has been deleted"
 
@@ -461,6 +453,7 @@ def cleaning_login_table():
 @app.route("/clean/table/music")
 def cleaning_music_table():
     """ route to cean music table """
+    print("in route clean table music")
     cleaning_db_music()
     return "Music DB has been deleted"
 
@@ -468,6 +461,7 @@ def cleaning_music_table():
 @app.route("/clean/bucket")
 def cleaning_bucket():
     """ Route to clean the bucket """
+    print("in route clean bucket")
     cleaning_bucket_music()
     return "Bucket has been deleted"
 
@@ -475,6 +469,7 @@ def cleaning_bucket():
 @app.route("/clean/all")
 def cleaning_all():
     """ Route to clean all """
+    print("in route cleaning all")
     cleaning_db_login()
     cleaning_db_music()
     cleaning_bucket_music()
@@ -484,6 +479,7 @@ def cleaning_all():
 @app.route("/create/all")
 def create_all():
     """ Route to create and fill all the table and bucket """
+    print("in route creat all")
     create_login_table()
     fill_login_table()
     creation_music_table()
