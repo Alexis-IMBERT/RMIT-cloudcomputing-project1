@@ -141,7 +141,11 @@ def get_songs(email: str) -> list:
     :return: song's list
     """
     print(f"in the function getting song for the email : {email}")
-    dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb',
+                              region_name=REGION,
+                              aws_access_key_id=KEY_ID,
+                              aws_secret_access_key=ACCESS_KEY,
+                              aws_session_token=TOKEN)
 
     table_name = DB_LOGIN
     table = dynamodb.Table(table_name)
