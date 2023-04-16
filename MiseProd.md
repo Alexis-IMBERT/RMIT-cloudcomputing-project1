@@ -1,28 +1,28 @@
 # Mise en production du projet  
 
-1. Creation de la VM EC2
-2. Connexion à la VM en SSH
-    - téléchager les clé ssh
-    - changer les permission sur la clé .pem
+1. Create EC2 VM
+2. Connect to the EC2 VM by ssh : 
+    - download ssh key 
+    - change permission on .pem key
     ```shell
-    chmod 400 ./labuser.pem
+    chmod 400 ./labsuser.pem
     ``` 
-    - connexion en ssh
+    - connect ssh 
     ```bash
-    ssh -i labuser.pem ubuntu@[ip/DNS]
+    ssh -i labsuser.pem ubuntu@[ip/DNS]
     ```
-3. git et python sont déja installé pip n'est pas installé  
+3. git and python are already install, pip is not :
     ```shell
+    sudo -i
     curl -O https://bootstrap.pypa.io/get-pip.py
-    sudo python3 get-pip.py --user
-    sudo echo "export PATH=LOCAL_PATH:$PATH" >> ~/.profile
-    sudo source ~/.profile
-    sudo pip install awsebcli --upgrade --user
-    sudo pip install flask httpx
+    python3 get-pip.py --user
+     echo "export PATH=LOCAL_PATH:$PATH" >> ~/.profile
+    source ~/.profile
+    pip install awsebcli --upgrade --user
+    pip install flask httpx boto3
 
     ```
-4. Téléchargement depuis le git
+4. Download of the project from the git
     ```bash
     git clone git@gitlab.insa-rouen.fr:aimbert/cloudcomputing-project1.git
-    git checkout frontend 
     ```
