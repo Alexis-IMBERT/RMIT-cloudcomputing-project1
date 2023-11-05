@@ -1,2 +1,2 @@
 REGION = "us-east-1"
-SECRET_KEY = "\x0b<3R3O+f!PU-O Xi;J9n;:\\"
+SECRET_KEY = "SECRETKEY"
